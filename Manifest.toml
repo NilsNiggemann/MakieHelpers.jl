@@ -1,0 +1,15 @@
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.7.1"
+manifest_format = "2.0"
+
+[[deps.MakieCore]]
+deps = ["Observables"]
+git-tree-sha1 = "9bd42b962d5c6182fa0d74b1970edb075fe313e5"
+uuid = "20f20a25-4f0e-4fdf-b5d1-57303727442b"
+version = "0.3.6"
+
+[[deps.Observables]]
+git-tree-sha1 = "dfd8d34871bc3ad08cd16026c1828e271d554db9"
+uuid = "510215fc-4207-5dde-b226-833fc4488ee2"
+version = "0.5.1"
