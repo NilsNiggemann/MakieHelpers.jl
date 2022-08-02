@@ -4,4 +4,7 @@ module MakieHelpers
     
     include("Heatmap.jl")
     export normalizeHalfs!,halfhalfheatmap!
+    
+    include("Cuts3D.jl")
+    export surfacePlot!,surfaceCut!
 end # module
