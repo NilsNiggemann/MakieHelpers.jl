@@ -1,4 +1,6 @@
 module MakieHelpers
+    using Makie
+
     include("insets.jl")
     export getbboxatPoint, insetAtPoint
     
