@@ -1,6 +1,10 @@
 module MakieHelpers
     using Makie
 
+    include("Ticks.jl")
+
+    export simplePiTicks
+    
     include("insets.jl")
     export getbboxatPoint, insetAtPoint
     
