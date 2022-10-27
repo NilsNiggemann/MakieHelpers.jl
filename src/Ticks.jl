@@ -1,8 +1,8 @@
-function simplePiTicks(n,min,max;sigdigits=1,latex = true)
+function simplePiTicks(n,min,max;digits=1,latex = true,kwargs...)
     range = LinRange(min,max,n)
     toString,zero_string,pi_string = 
     if latex
-        latexstring,L"0",L"\pi"
+        Makie.latexstring,L"0",L"\pi"
     else
         string,"0","π"
     end
@@ -14,7 +14,7 @@ function simplePiTicks(n,min,max;sigdigits=1,latex = true)
         elseif isinteger(x)
             return toString(Int(x),pi_string)
         else
-            return toString(round(x;sigdigits),pi_string)
+            return toString(round(x;digits,kwargs...),pi_string,)
         end
     end
     ticks = simplify_pi.(range)
