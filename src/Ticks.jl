@@ -1,5 +1,4 @@
-function simplePiTicks(n,min,max;digits=1,latex = true,kwargs...)
-    range = LinRange(min,max,n)
+function simplePiTicks(range::AbstractArray;digits=1,latex = true,kwargs...)
     toString,zero_string,pi_string = 
     if latex
         Makie.latexstring,L"0",L"\pi"
@@ -20,3 +19,6 @@ function simplePiTicks(n,min,max;digits=1,latex = true,kwargs...)
     ticks = simplify_pi.(range)
     return (range,ticks)
 end
+
+simplePiTicks(n::Integer,min::Real,max::Real;kwargs...) = simplePiTicks(LinRange(min,max,n);kwargs...)
+simplePiTicks(range;kwargs...) = simplePiTicks(collect(range);kwargs...)
