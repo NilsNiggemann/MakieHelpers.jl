@@ -38,3 +38,12 @@ function CombinedMatrix(kx::AbstractVector,ky::AbstractVector,F1::Function,F2::F
     normalize && normalizeHalfs!(M,kx,ky,separationLine)
     return M
 end
+
+function removeFromMatrix(qx::AbstractVector,qy::AbstractVector,Mat::AbstractMatrix,sep::Function)
+    function mel(i,j)
+        kx, ky = qx[i], qy[j]
+        sep(kx,ky) && return Mat[i,j]
+        return missing
+    end
+    return [mel(i,j) for i in eachindex(qx), j in eachindex(qy)]
+end
