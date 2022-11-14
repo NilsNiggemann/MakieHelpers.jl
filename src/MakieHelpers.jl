@@ -9,7 +9,7 @@ module MakieHelpers
     export getbboxatPoint, insetAtPoint
     
     include("Heatmap.jl")
-    export normalizeHalfs!,halfhalfheatmap!
+    export normalizeHalfs!,halfhalfheatmap!,removeFromMatrix
     
     include("Cuts3D.jl")
     export surfacePlot!,surfaceCut!
