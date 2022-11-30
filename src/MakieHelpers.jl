@@ -3,7 +3,7 @@ module MakieHelpers
 
     include("Ticks.jl")
 
-    export simpleTicks,simplePiTicks
+    export makeTicks,simpleTicks,simplePiTicks
     
     include("insets.jl")
     export getbboxatPoint, insetAtPoint

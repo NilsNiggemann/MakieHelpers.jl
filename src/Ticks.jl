@@ -1,4 +1,7 @@
 
+"""Example use: makeTicks(Any[-1.5,-1,-0.5,0,0.5,1])"""
+makeTicks(ticks) = (ticks,Makie.latexstring.(ticks))
+
 function _simplify(x;digits=1,kwargs...)
     if x ≈ 0.
         return 0
@@ -34,7 +37,10 @@ function simplePiTicks(range::AbstractArray;latex = true,kwargs...)
         x = x/π
         if x ≈ 0.
             return toString("0")
-        else 
+        elseif abs(x) ≈ 1
+            label = ifelse(x>0,"π","-π")
+            return toString(label)
+        else
             return toString(_simplify(x;kwargs...),"π")
         end
     end
