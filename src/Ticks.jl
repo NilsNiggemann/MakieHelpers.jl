@@ -1,10 +1,9 @@
-function _simplify(x;digits=1,kwargs...)
-    if x ≈ 0.
-        return 0
-    elseif isinteger(x)
-        return Int(x)
+function _simplify(x;sigdigits=7,kwargs...)
+    rdInt = round(Int,x;kwargs...)
+    if isapprox(rdInt,x;atol = exp10(-sigdigits))
+        return rdInt
     else
-        return round(x;digits,kwargs...)
+        return round(x;sigdigits,kwargs...)
     end
 end
 
