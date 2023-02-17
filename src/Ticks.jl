@@ -1,7 +1,3 @@
-
-"""Example use: makeTicks(Any[-1.5,-1,-0.5,0,0.5,1])"""
-makeTicks(ticks) = (ticks,Makie.latexstring.(ticks))
-
 function _simplify(x;digits=1,kwargs...)
     if x ≈ 0.
         return 0
@@ -12,43 +8,34 @@ function _simplify(x;digits=1,kwargs...)
     end
 end
 
-function _getToString(latex = true)
-    return latex ? Makie.latexstring : string
-end
-
-function simpleTicks(range::AbstractArray;latex = true,kwargs...)
-    toString = _getToString(latex)
-
-    stringConvert(x) = x ≈ 0 ? toString("0") : toString(x)
-
-    simplify_str(x) = stringConvert(_simplify(x,kwargs...))
-    ticks = simplify_str.(range)
-    range_simp = _simplify.(range;kwargs...)
-    return (range_simp,ticks)
-end
-
-simpleTicks(n::Integer,min::Real,max::Real;kwargs...) = simpleTicks(LinRange(min,max,n);kwargs...)
-simpleTicks(range;kwargs...) = simpleTicks(collect(range);kwargs...)
-
-function simplePiTicks(range::AbstractArray;latex = true,kwargs...)
-    toString = _getToString(latex)
-
-    function simplify_pi(x)
-        x = x/π
-        if x ≈ 0.
-            return toString("0")
-        elseif abs(x) ≈ 1
-            label = ifelse(x>0,"π","-π")
-            return toString(label)
-        else
-            return toString(_simplify(x;kwargs...),"π")
-        end
+function simplify_pi(x)
+    if x ≈ 0 
+        return Makie.latexstring("0")
+    elseif abs(x) ≈ 1
+        label = ifelse(x>0,"π","-π")
+        return Makie.latexstring(label)
+    else
+        return Makie.latexstring(_simplify(x),"π")
     end
-
-    ticks = simplify_pi.(range)
-    range_simp = _simplify.(range ./pi;kwargs...) .*pi
-    return (range_simp,ticks)
 end
 
-simplePiTicks(n::Integer,min::Real,max::Real;kwargs...) = simplePiTicks(LinRange(min,max,n);kwargs...)
-simplePiTicks(range;kwargs...) = simplePiTicks(collect(range);kwargs...)
+struct PiTicks end
+
+function Makie.get_ticks(::PiTicks, any_scale, ::Makie.Automatic, vmin, vmax)
+    vmin = vmin/pi
+    vmax = vmax/pi
+
+    vals_s = Makie.get_tickvalues(Makie.automatic, any_scale, vmin, vmax)
+
+    labels = simplify_pi.(vals_s)
+
+    pi.*vals_s, labels
+end
+
+struct SimpleTicks end
+
+function Makie.get_ticks(::SimpleTicks, any_scale, ::Makie.Automatic, vmin, vmax)
+    vals_s = Makie.get_tickvalues(Makie.automatic, any_scale, vmin, vmax)
+    labels = Makie.latexstring.(_simplify.(vals_s))
+    vals_s, labels
+end

@@ -3,7 +3,7 @@ module MakieHelpers
 
     include("Ticks.jl")
 
-    export makeTicks,simpleTicks,simplePiTicks
+    export PiTicks,SimpleTicks
     
     include("insets.jl")
     export getbboxatPoint, insetAtPoint
@@ -13,4 +13,5 @@ module MakieHelpers
     
     include("Cuts3D.jl")
     export surfacePlot!,surfaceCut!
+
 end # module
