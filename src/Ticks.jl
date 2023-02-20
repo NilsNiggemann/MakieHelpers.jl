@@ -38,3 +38,27 @@ function Makie.get_ticks(::SimpleTicks, any_scale, ::Makie.Automatic, vmin, vmax
     labels = Makie.latexstring.(_simplify.(vals_s))
     vals_s, labels
 end
+
+
+function PiTicks(range::AbstractArray;digits=1,kwargs...)
+    toString = Makie.latexstring
+
+    function simplify_pi(x)
+        x = x/π
+        if x ≈ 0.
+            return toString("0")
+        else 
+            return toString(_simplify(x;kwargs...),"π")
+        end
+    end
+
+    ticks = simplify_pi.(range)
+    range_simp = _simplify.(range ./pi;kwargs...) .*pi
+    return (range_simp,ticks)
+end
+
+PiTicks(n::Integer,min::Real,max::Real;kwargs...) = PiTicks(LinRange(min,max,n);kwargs...)
+PiTicks(range;kwargs...) = PiTicks(collect(range);kwargs...)
+
+PiTicks(n::Integer,min::Real,max::Real;kwargs...) = PiTicks(LinRange(min,max,n);kwargs...)
+PiTicks(range;kwargs...) = PiTicks(collect(range);kwargs...)
