@@ -50,6 +50,3 @@ end
 
 PiTicks(n::Integer,min::Real,max::Real;kwargs...) = PiTicks(LinRange(min,max,n);kwargs...)
 PiTicks(range;kwargs...) = PiTicks(collect(range);kwargs...)
-
-PiTicks(n::Integer,min::Real,max::Real;kwargs...) = PiTicks(LinRange(min,max,n);kwargs...)
-PiTicks(range;kwargs...) = PiTicks(collect(range);kwargs...)
