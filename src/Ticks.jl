@@ -42,18 +42,9 @@ end
 
 function PiTicks(range::AbstractArray;digits=1,kwargs...)
     toString = Makie.latexstring
-
-    function simplify_pi(x)
-        x = x/π
-        if x ≈ 0.
-            return toString("0")
-        else 
-            return toString(_simplify(x;kwargs...),"π")
-        end
-    end
-
-    ticks = simplify_pi.(range)
-    range_simp = _simplify.(range ./pi;kwargs...) .*pi
+    pirange = range ./pi
+    ticks = simplify_pi.(pirange)
+    range_simp = _simplify.(pirange;kwargs...) .*pi
     return (range_simp,ticks)
 end
 
