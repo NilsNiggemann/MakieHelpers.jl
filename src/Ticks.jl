@@ -46,18 +46,21 @@ function Makie.get_ticks(::SimpleTicks, any_scale, ::Makie.Automatic, vmin, vmax
     labels = Makie.latexstring.(_simplify.(vals_s))
     vals_s, labels
 end
-basisStr(::typeof(log10)) = "10"
+
+const Log10Types = Union{typeof(log10),typeof(Makie.pseudolog10),typeof(Makie.Symlog10(1))}
+basisStr(::Log10Types) = "10"
+basisStr(::typeof(Makie.Symlog10(1))) = "10"
 basisStr(::typeof(log2)) = "2"
 basisStr(::typeof(log)) = "e"
 
-function Makie.get_ticks(::SimpleTicks, scale::Union{typeof(log10), typeof(log2), typeof(log)}, ::Makie.Automatic, vmin, vmax)
+function Makie.get_ticks(::SimpleTicks, scale::Union{typeof(log), typeof(log2),Log10Types}, ::Makie.Automatic, vmin, vmax)
     vals_s = Makie.get_tickvalues(LogTicks(WilkinsonTicks(5, k_min = 3)), scale, vmin, vmax)
     basis = basisStr(scale)
-    exp = [_simplify(scale(v)) for v in vals_s]
-    labels = [Makie.latexstring("$basis^{$exp}") for exp in exp]
+    expVal(v) = _simplify(scale(v))
+    sgnstring(x) = ifelse(x<0,"-","")
+    labels = [Makie.latexstring("$(sgnstring(v)) $basis^{$(expVal(v))}") for v in vals_s]
     vals_s, labels
 end
-
 
 function PiTicks(range::AbstractArray;digits=1,kwargs...)
     pirange = range ./pi
