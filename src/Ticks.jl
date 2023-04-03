@@ -7,6 +7,17 @@ function _simplify(x;sigdigits=7,kwargs...)
     end
 end
 
+"""given a string of a float cut off all trailing zeros behind the decimal point"""
+function cut_trailing_zeros(s::String)
+    if occursin(r"\.",s)
+        s = replace(s,r"\.0+$"=>"")
+    end
+    return s
+end
+cut_trailing_zeros(x::Real) = cut_trailing_zeros(string(x))
+
+simplifyString(x::Real) = cut_trailing_zeros(_simplify(x))
+
 function simplify_pi(x)
     if x ≈ 0 
         return Makie.latexstring("0")
@@ -14,7 +25,7 @@ function simplify_pi(x)
         label = ifelse(x>0,"π","-π")
         return Makie.latexstring(label)
     else
-        return Makie.latexstring(_simplify(x),"π")
+        return Makie.latexstring(simplifyString(x),"π")
     end
 end
 
@@ -35,7 +46,7 @@ struct SimpleTicks end
 
 function SimpleTicks(range::AbstractArray;digits=1,kwargs...)
     range_simp = _simplify.(range;kwargs...)
-    return (range_simp,Makie.latexstring.(range_simp))
+    return (range_simp,Makie.latexstring.(cut_trailing_zeros.(range_simp)))
 end
 
 SimpleTicks(n::Integer,min::Real,max::Real;kwargs...) = SimpleTicks(LinRange(min,max,n);kwargs...)
@@ -43,7 +54,7 @@ SimpleTicks(range;kwargs...) = SimpleTicks(collect(range);kwargs...)
 
 function Makie.get_ticks(::SimpleTicks, any_scale, ::Makie.Automatic, vmin, vmax)
     vals_s = Makie.get_tickvalues(Makie.automatic, any_scale, vmin, vmax)
-    labels = Makie.latexstring.(_simplify.(vals_s))
+    labels = Makie.latexstring.(simplifyString.(vals_s))
     vals_s, labels
 end
 
@@ -56,7 +67,7 @@ basisStr(::typeof(log)) = "e"
 function Makie.get_ticks(::SimpleTicks, scale::Union{typeof(log), typeof(log2),Log10Types}, ::Makie.Automatic, vmin, vmax)
     vals_s = Makie.get_tickvalues(LogTicks(WilkinsonTicks(5, k_min = 3)), scale, vmin, vmax)
     basis = basisStr(scale)
-    expVal(v) = _simplify(scale(v))
+    expVal(v) = simplifyString(scale(v))
     sgnstring(x) = ifelse(x<0,"-","")
     labels = [Makie.latexstring("$(sgnstring(v)) $basis^{$(expVal(v))}") for v in vals_s]
     vals_s, labels
