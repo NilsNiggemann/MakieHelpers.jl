@@ -1,5 +1,5 @@
 module MakieHelpers
-    using Makie
+    using Makie,CairoMakie
 
     include("Ticks.jl")
 
@@ -14,4 +14,6 @@ module MakieHelpers
     include("Cuts3D.jl")
     export surfacePlot!,surfaceCut!
 
+    using PrecompileTools
+    include("precompile.jl")
 end # module
