@@ -7,7 +7,7 @@
         ky = LinRange(0,1,5)
         func_k = fetch.([Threads.@spawn func(ki,ki,kj) for ki in kx, kj in ky])
 
-        fig = Figure(resolution = (800, 600))
+        fig = Figure(size = (800, 600))
 
         ax = Axis(fig[1, 1],aspect = 1)
 
