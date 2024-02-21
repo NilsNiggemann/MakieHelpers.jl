@@ -1,6 +1,6 @@
 function getbboxatPoint(ax,coords,extent = (30,30))
     width,height = extent
-    bbox = lift(ax.scene.camera.projectionview, ax.scene.px_area) do _, pxa
+    bbox = lift(ax.scene.camera.projectionview, ax.scene.viewport) do _, pxa
         p = Makie.project(ax.scene, Point(coords...))
         
         c = p + pxa.origin
