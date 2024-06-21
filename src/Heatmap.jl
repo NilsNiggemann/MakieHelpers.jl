@@ -16,7 +16,7 @@ end
 function halfhalfheatmap!(ax,kx::AbstractVector,ky::AbstractVector,M::AbstractMatrix,separationLine::Function;heatmapfunc!::Function = heatmap!,normalize = false,kwargs...)
     normalize && normalizeHalfs!(M,kx,ky,separationLine)
     hm = heatmapfunc!(ax,kx,ky,M;kwargs...)
-    lines!(ax,kx,separationLine.(kx),color = :white,lw = 4)
+    lines!(ax,kx,separationLine.(kx),color = :white,linewidth = 4)
     limits!(ax,minimum(kx),maximum(kx),minimum(ky),maximum(ky))
     return hm
 end
