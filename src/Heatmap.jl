@@ -47,3 +47,26 @@ function removeFromMatrix(qx::AbstractVector,qy::AbstractVector,Mat::AbstractMat
     end
     return [mel(i,j) for i in eachindex(qx), j in eachindex(qy)]
 end
+
+function numberheatmap!(ax::Makie.AbstractAxis,x,y,z::AbstractMatrix;plotheatmap=true,kwargs...)
+    if plotheatmap
+        heatmap!(ax,x,y,z;kwargs...)
+    end
+    for (i,xi) in enumerate(x), (j,yj) in enumerate(y)
+        color = z[i, j] < mean(z) ? :white : :black
+        text!(ax,xi,yj,text = string(z[i,j]),align = (:center, :center);color)
+    end
+end
+function numberheatmap!(ax::Makie.AbstractAxis,x,y,z::Function;kwargs...)
+    zMat = [z(x,y) for x in x, y in y]
+    numberheatmap!(ax,x,y,zMat;kwargs...)
+end
+numberheatmap!(args...;kwargs...) = numberheatmap!(current_axis(),args...;kwargs...)
+function numberheatmap(args...;axis = (;),kwargs...)
+    fig = Figure()
+    ax = Axis(fig[1,1];axis...)
+    numberheatmap!(ax,args...;kwargs...)
+    fig
+end
+numberheatmap!(z::AbstractMatrix;kwargs...) = numberheatmap!(axes(z,1),axes(z,2),z;kwargs...)
+numberheatmap(z::AbstractMatrix;kwargs...) = numberheatmap(axes(z,1),axes(z,2),z;kwargs...)
