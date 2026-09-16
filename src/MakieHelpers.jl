@@ -18,7 +18,7 @@ include("Cuts3D.jl")
 export surfacePlot!, surfaceCut!, surfaceSliders!, surfaceSliders
 
 include("Themes.jl")
-export theme_SimpleTicks, theme_PiTicks
+export theme_SimpleTicks, theme_PiTicks, theme_fancy, theme_presentation, fancy_style, presentation_style
 
 using PrecompileTools
 include("precompile.jl")
