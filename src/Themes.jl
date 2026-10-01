@@ -9,7 +9,7 @@ function theme_SimpleTicks(;latex = true)
 			yticks = SimpleTicks(),
 			zticks = SimpleTicks(),
 		),
-
+		Colorbar = (ticks = SimpleTicks(),),
 	)
 	if latex
 		theme = merge(theme, theme_latexfonts())
