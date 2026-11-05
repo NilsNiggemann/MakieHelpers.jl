@@ -4,11 +4,15 @@ const _publication_axis = (;
 	xminorticks = SimpleMinorTicks(), yminorticks = SimpleMinorTicks(),
 )
 
-# journal look: inward ticks on all four sides, minor ticks, series colors black, red, blue, ...
+# journal look: inward ticks on all four sides, minor ticks, series colors black, red, blue, ...;
+# markers and error bars sized for a figure of one journal column (328 units)
 _publication_theme() = Theme(
 	palette = (color = [colorant"black", colorant"red", colorant"blue", Makie.wong_colors()[4:end]...],),
 	Axis = _publication_axis,
 	Colorbar = (minorticksvisible = true, minorticks = SimpleMinorTicks()),
+	Scatter = (markersize = 6,),
+	ScatterLines = (markersize = 6,),
+	Errorbars = (whiskerwidth = 4, linewidth = 1.2),
 )
 
 _with_publication(theme, publication) = publication ? merge(theme, _publication_theme()) : theme
@@ -18,8 +22,9 @@ _with_publication(theme, publication) = publication ? merge(theme, _publication_
 
 Axis, Axis3 and Colorbar ticks with [`SimpleTicks`](@ref) labels (`0` instead of `0.0`) in the
 LaTeX font. `publication = true` adds the journal look: ticks point inward and appear on all
-four sides, with minor ticks from [`SimpleMinorTicks`](@ref), and series cycle through black, red,
-blue, then the remaining Wong colors. On heatmaps make the ticks
+four sides, with minor ticks from [`SimpleMinorTicks`](@ref), series cycle through black, red,
+blue, then the remaining Wong colors, and markers (size 6) and error bars (whiskers 4, width 1.2)
+are sized for a single journal column. On dark heatmaps make the ticks
 visible with [`tickcolor!`](@ref)`(ax, :white)`.
 """
 function theme_SimpleTicks(;latex = true, publication = false)
@@ -45,6 +50,7 @@ end
 	theme_PiTicks(; latex = true, publication = false)
 
 Like [`theme_SimpleTicks`](@ref), with ticks at multiples of π for angles and momenta.
+Colorbars keep [`SimpleTicks`](@ref); an axis that is not an angle needs `yticks = SimpleTicks()`.
 """
 function theme_PiTicks(;latex = true, publication = false)
 	theme = Theme(
@@ -62,13 +68,13 @@ function theme_PiTicks(;latex = true, publication = false)
 			yticks = PiTicks(),
 			zticks = PiTicks(),
 		),
+		Colorbar = (ticks = SimpleTicks(),),
 	)
 	if latex
 		theme = merge(theme, theme_latexfonts())
 	end
 	return _with_publication(theme, publication)
 end
-vv() = 2
 
 """
 	tickcolor!(ax, color = :white)

@@ -15,6 +15,26 @@ function errorbarelement(; color = :black, linewidth = 1.5, whiskerwidth = 10, d
 	                      markersize = whiskerwidth, color, strokewidth = 0)]
 end
 
+# Legend markers at least as large as the Legend's markersize (9 by default), so the small markers
+# of the publication theme (6) stay readable next to the error-bar glyph. Makie defines this method
+# for all Scatter plots; the narrower signature (2D points, every Axis scatter) adds a method instead
+# of overwriting Makie's, and reuses it. A `label => (; markersize)` override still wins.
+function _legendmarkersize(ms, legend)
+	default = Makie.to_value(legend.markersize)
+	ms isa Real && return max(ms, default)
+	ms isa Makie.VecTypes{2} && return max.(ms, default)
+	return default  # per-point sizes: the legend default, as in Makie
+end
+
+function Makie.legendelements(plot::Scatter{<:Tuple{AbstractVector{<:Point2}}}, legend)
+	elements = invoke(Makie.legendelements, Tuple{Scatter, Any}, plot, legend)
+	ms = _legendmarkersize(Makie.to_value(plot.markersize), legend)
+	for el in elements
+		el.attributes[:markersize] = ms isa Real ? Vec2f(ms, ms) : Vec2f(ms)  # stored as Vec2f
+	end
+	return elements
+end
+
 # vertical error bars with caps instead of Makie's default horizontal line
 function Makie.legendelements(plot::Errorbars, legend)
 	return errorbarelement(; color = Makie.to_color(plot.color[]), linewidth = plot.linewidth[],
@@ -68,5 +88,6 @@ function Makie.legendelements(p::ErrLines, legend)
 	line = LineElement(; color, linewidth = p.linewidth[], linestyle = p.linestyle[])
 	p.markersize[] > 0 || return [line]
 	return [line, errorbarelement(; color, whiskerwidth = 8)...,
-	        MarkerElement(; color, marker = p.marker[], markersize = p.markersize[], strokewidth = 0)]
+	        MarkerElement(; color, marker = p.marker[], markersize = _legendmarkersize(p.markersize[], legend),
+	                      strokewidth = 0)]
 end

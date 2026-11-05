@@ -18,6 +18,14 @@ cut_trailing_zeros(x::Real) = cut_trailing_zeros(string(x))
 
 simplifyString(x::Real) = cut_trailing_zeros(_simplify(x))
 
+"""
+	simplestring(x)
+
+`x` as a short string, formatted like [`SimpleTicks`](@ref) labels: `0` instead of `0.0`,
+`0.1` instead of `0.1000000001`. For labels, e.g. `L"x = %\$(simplestring(x))"`.
+"""
+simplestring(x::Real) = simplifyString(x)
+
 function simplify_pi(x)
     if x ≈ 0 
         return Makie.latexstring("0")

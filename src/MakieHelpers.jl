@@ -6,7 +6,7 @@ export errlines, errlines!, errorbarelement
 
 include("Ticks.jl")
 
-export PiTicks, SimpleTicks, SimpleMinorTicks
+export PiTicks, SimpleTicks, SimpleMinorTicks, simplestring
 
 include("insets.jl")
 export getbboxatPoint, insetAtPoint

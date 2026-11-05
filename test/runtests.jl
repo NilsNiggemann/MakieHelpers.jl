@@ -62,3 +62,25 @@ end
 	numberheatmap!(Axis(fig[1, 2]), 1:3, 1:2, [0.123456 1; 2 3; 4 5])
 	colorbuffer(fig)
 end
+
+@testset "0.3.1: PiTicks colorbar, simplestring, legend markers" begin
+	@test simplestring(0.0) == "0" && simplestring(0.1) == "0.1" && simplestring(2.50) == "2.5"
+	with_theme(theme_PiTicks(; publication = true)) do
+		fig = Figure()
+		cb = Colorbar(fig[1, 1]; limits = (0, 1))
+		@test cb.ticks[] isa SimpleTicks
+		ax = Axis(fig[1, 2])
+		s = scatter!(ax, 1:3, 1:3; label = "s")
+		@test first(s.markersize[]) == 6  # publication marker size
+		errorbars!(ax, 1:3, 1:3, fill(0.1, 3); label = "s")
+		e = errlines!(ax, 1:3, 1:3, fill(0.1, 3); markersize = 5, label = "e")
+		scatter!(ax, 1:3, 1:3; markersize = 14, label = "big")
+		leg = axislegend(ax; merge = true)
+		sizes(i) = [first(el.attributes[:markersize][]) for el in leg.entrygroups[][1][2][i].elements
+		            if el isa MarkerElement && el.attributes[:marker][] ∉ (:hline, :vline)]
+		@test sizes(1) == [9]   # small plot markers grow to the Legend's markersize
+		@test sizes(2) == [9]   # errlines too
+		@test sizes(3) == [14]  # larger ones stay
+		colorbuffer(fig)
+	end
+end
