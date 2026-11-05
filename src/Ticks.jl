@@ -73,6 +73,57 @@ function Makie.get_ticks(::SimpleTicks, scale::Union{typeof(log), typeof(log2),L
     vals_s, labels
 end
 
+# log10 axes: whole powers of ten when the range spans at least three of them, otherwise
+# 1-2-5 ticks labelled as plain numbers (fractional exponents like 10^{1.5} are hard to read)
+function Makie.get_ticks(::SimpleTicks, scale::typeof(log10), ::Makie.Automatic, vmin, vmax)
+    lo, hi = log10(vmin), log10(vmax)
+    exps = ceil(Int, lo - 1e-9):floor(Int, hi + 1e-9)
+    if length(exps) >= 3
+        step = cld(length(exps), 6)
+        vals = exp10.(exps[1:step:end])
+        return vals, [Makie.latexstring("10^{$e}") for e in exps[1:step:end]]
+    end
+    candidates(ms) = [m * exp10(e) for e in floor(Int, lo):ceil(Int, hi) for m in ms if vmin <= m * exp10(e) <= vmax]
+    vals = candidates((1, 2, 5))
+    length(vals) > 7 && (vals = candidates((1, 3)))
+    length(vals) < 2 && (vals = candidates(1:9))
+    return vals, Makie.latexstring.(simplifyString.(vals))
+end
+
+"""
+	SimpleMinorTicks()
+
+Minor ticks whose count follows the major tick step, for `xminorticks`/`yminorticks`:
+a major step of 1, 2 or 5 (times a power of ten) gets minor ticks every 0.2, 0.5 or 1;
+a step that is a multiple of π/4 gets minor ticks every π/4 (or π/8 for a π/4 step);
+on log10 axes minor ticks sit at every integer mantissa (2, 3, ..., 9 times a power of ten),
+only at whole decades when the axis spans more than six of them.
+"""
+struct SimpleMinorTicks end
+
+function _minor_intervals(step)
+	s = abs(step)
+	quarters = 4s / π
+	if round(quarters) >= 1 && isapprox(quarters, round(quarters); atol = 1e-6)
+		return clamp(round(Int, quarters), 2, 4)
+	end
+	mantissa = round(s / exp10(floor(log10(s))); sigdigits = 3)
+	return mantissa ≈ 2 ? 4 : 5
+end
+
+function Makie.get_minor_tickvalues(::SimpleMinorTicks, scale, tickvalues, vmin, vmax)
+	length(tickvalues) < 2 && return Float64[]
+	n = _minor_intervals(tickvalues[2] - tickvalues[1])
+	return Makie.get_minor_tickvalues(IntervalsBetween(n, true), scale, tickvalues, float(vmin), float(vmax))
+end
+
+function Makie.get_minor_tickvalues(::SimpleMinorTicks, ::typeof(log10), tickvalues, vmin, vmax)
+	decades = floor(Int, log10(vmin)):ceil(Int, log10(vmax))
+	mantissas = length(decades) > 7 ? (1,) : 1:9
+	vals = [m * exp10(e) for e in decades for m in mantissas if vmin <= m * exp10(e) <= vmax]
+	return filter(v -> !any(t -> isapprox(v, t; rtol = 1e-6), tickvalues), vals)
+end
+
 function PiTicks(range::AbstractArray;digits=1,kwargs...)
     pirange = range ./pi
     ticks = simplify_pi.(pirange)

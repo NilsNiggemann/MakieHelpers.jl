@@ -1,4 +1,28 @@
-function theme_SimpleTicks(;latex = true)
+const _publication_axis = (;
+	xtickalign = 1, ytickalign = 1, xticksmirrored = true, yticksmirrored = true,
+	xminorticksvisible = true, yminorticksvisible = true, xminortickalign = 1, yminortickalign = 1,
+	xminorticks = SimpleMinorTicks(), yminorticks = SimpleMinorTicks(),
+)
+
+# journal look: inward ticks on all four sides, minor ticks, series colors black, red, blue, ...
+_publication_theme() = Theme(
+	palette = (color = [colorant"black", colorant"red", colorant"blue", Makie.wong_colors()[4:end]...],),
+	Axis = _publication_axis,
+	Colorbar = (minorticksvisible = true, minorticks = SimpleMinorTicks()),
+)
+
+_with_publication(theme, publication) = publication ? merge(theme, _publication_theme()) : theme
+
+"""
+	theme_SimpleTicks(; latex = true, publication = false)
+
+Axis, Axis3 and Colorbar ticks with [`SimpleTicks`](@ref) labels (`0` instead of `0.0`) in the
+LaTeX font. `publication = true` adds the journal look: ticks point inward and appear on all
+four sides, with minor ticks from [`SimpleMinorTicks`](@ref), and series cycle through black, red,
+blue, then the remaining Wong colors. On heatmaps make the ticks
+visible with [`tickcolor!`](@ref)`(ax, :white)`.
+"""
+function theme_SimpleTicks(;latex = true, publication = false)
 	theme = Theme(
 		Axis = (
 			xticks = SimpleTicks(),
@@ -14,10 +38,15 @@ function theme_SimpleTicks(;latex = true)
 	if latex
 		theme = merge(theme, theme_latexfonts())
 	end
-	return theme
+	return _with_publication(theme, publication)
 end
 
-function theme_PiTicks(;latex = true)
+"""
+	theme_PiTicks(; latex = true, publication = false)
+
+Like [`theme_SimpleTicks`](@ref), with ticks at multiples of π for angles and momenta.
+"""
+function theme_PiTicks(;latex = true, publication = false)
 	theme = Theme(
 		Axis = (
 			xticks = PiTicks(),
@@ -37,9 +66,21 @@ function theme_PiTicks(;latex = true)
 	if latex
 		theme = merge(theme, theme_latexfonts())
 	end
-	return theme
+	return _with_publication(theme, publication)
 end
 vv() = 2
+
+"""
+	tickcolor!(ax, color = :white)
+
+Color of all major and minor ticks of `ax`, e.g. white ticks that stay visible on a dark heatmap
+when the ticks point inward (`publication = true`).
+"""
+function tickcolor!(ax, color = :white)
+	ax.xtickcolor = ax.ytickcolor = color
+	ax.xminortickcolor = ax.yminortickcolor = color
+	return ax
+end
 
 """
 Colors of the fancy theme by role: `ink` for titles and labels, `muted` for ticks,

@@ -2,11 +2,11 @@ module MakieHelpers
 using Makie, CairoMakie
 
 include("errlines.jl")
-export errlines,errlines!
+export errlines, errlines!, errorbarelement
 
 include("Ticks.jl")
 
-export PiTicks, SimpleTicks
+export PiTicks, SimpleTicks, SimpleMinorTicks
 
 include("insets.jl")
 export getbboxatPoint, insetAtPoint
@@ -17,8 +17,11 @@ export normalizeHalfs!, halfhalfheatmap!, removeFromMatrix, numberheatmap, numbe
 include("Cuts3D.jl")
 export surfacePlot!, surfaceCut!, surfaceSliders!, surfaceSliders
 
+include("PanelLabels.jl")
+export panellabel!, panellabels!
+
 include("Themes.jl")
-export theme_SimpleTicks, theme_PiTicks, theme_fancy, theme_presentation, fancy_style, presentation_style
+export theme_SimpleTicks, theme_PiTicks, tickcolor!, theme_fancy, theme_presentation, fancy_style, presentation_style
 
 using PrecompileTools
 include("precompile.jl")
