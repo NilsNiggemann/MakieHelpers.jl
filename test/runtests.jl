@@ -81,6 +81,7 @@ end
 		@test sizes(1) == [9]   # small plot markers grow to the Legend's markersize
 		@test sizes(2) == [9]   # errlines too
 		@test sizes(3) == [14]  # larger ones stay
+		@test first(s.markersize[]) == 6  # enlarging the legend marker must not resize the plot
 		colorbuffer(fig)
 	end
 end

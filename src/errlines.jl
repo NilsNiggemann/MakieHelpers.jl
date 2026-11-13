@@ -30,6 +30,8 @@ function Makie.legendelements(plot::Scatter{<:Tuple{AbstractVector{<:Point2}}}, 
 	elements = invoke(Makie.legendelements, Tuple{Scatter, Any}, plot, legend)
 	ms = _legendmarkersize(Makie.to_value(plot.markersize), legend)
 	for el in elements
+		# Makie passes the plot's own markersize observable; setting the key would resize the plot
+		delete!(el.attributes, :markersize)
 		el.attributes[:markersize] = ms isa Real ? Vec2f(ms, ms) : Vec2f(ms)  # stored as Vec2f
 	end
 	return elements
